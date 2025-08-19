@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>U-Ville</title>
+<style>
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #a0d8f1;
+    overflow: hidden;
+  }
+
+  .map-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .map {
+    width: 2000px;
+    height: 1200px;
+    background: linear-gradient(to top, #7cfc00 30%, #a0d8f1 70%);
+    position: absolute;
+    top: 50px;
+    left: -60px;
+    transition: transform 1s ease;
+  }
+
+  /* 山画像版 */
+  .mountain {
+    position: absolute;
+    top: 0px;
+    left: 800px;              /* 馬小屋の後ろ */
+    width: 350px;
+    height: 350px;
+    background-image: url('png/mountain.png');  /* ← ここで画像を指定 */
+    background-size: contain;   /* 元の比率を保って収める */
+    background-repeat: no-repeat;
+    z-index: 0;                 /* 建物より後ろ */
+  }
+
+  .horse_botton {
+    width: 120px;
+    height: 120px;
+    background-image: url('png/horse.png'); /* 馬の顔画像 */
+    background-size: cover;   /* ボタンいっぱいに広げる */
+    background-position: center;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid #e76f51;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .building {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: #f4a261;
+    border: 2px solid #e76f51;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    transition: transform 0.5s;
+    z-index: 3; /* 山より前 */
+  }
+
+  .building:hover {
+    transform: scale(1.1);
+  }
+
+  .info {
+    position: fixed;
+    padding: 20px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    border-radius: 10px;
+    display: none;
+    width: 250px;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .close-btn {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 5px 10px;
+    background: #e76f51;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="map-container">
+  <div class="map" id="map">
+    <!-- 山の奥行き -->
+    <div class="mountain" style="top: 0px; left: 820px;"></div>
+
+    <!-- 馬小屋 -->
+    <div class="horse_botton" style="top: 0px; left: 1050px;" data-name="馬小屋" data-desc="ここは馬小屋です。馬と触れ合えます。" data-link="#stables">馬小屋</div>
+
+    <!-- 他の建物 -->
+    <div class="building" style="top: 500px; left: 400px;" data-name="交流" data-desc="ここは交流広場です。メンバーと話しましょう。" data-link="#community">交流</div>
+    <div class="building" style="top: 500px; left: 940px;" data-name="ショップ" data-desc="ここはショップです。アイテムが買えます。" data-link="#shop">ショップ</div>
+    <div class="building" style="top: 500px; left: 1480px;" data-name="掲示板" data-desc="掲示板で情報を共有できます。" data-link="#forum">掲示板</div>
+  </div>
+</div>
+
+<div class="info" id="infoBox">
+  <h2 id="infoTitle"></h2>
+  <p id="infoDesc"></p>
+  <a id="infoLink" href="#"><div class="close-btn">入る</div></a>
+</div>
+
+<script>
+  const map = document.getElementById('map');
+  const buildings = document.querySelectorAll('.building');
+  const infoBox = document.getElementById('infoBox');
+  const infoTitle = document.getElementById('infoTitle');
+  const infoDesc = document.getElementById('infoDesc');
+  const infoLink = document.getElementById('infoLink');
+
+  buildings.forEach(b => {
+    b.addEventListener('click', () => {
+      const rect = b.getBoundingClientRect();
+      const mapRect = map.getBoundingClientRect();
+      const mapCenterX = mapRect.width / 2;
+      const mapCenterY = mapRect.height / 2;
+      const buildingCenterX = rect.left + rect.width/2;
+      const buildingCenterY = rect.top + rect.height/2;
+
+      const offsetX = mapCenterX - buildingCenterX;
+      const offsetY = mapCenterY - buildingCenterY;
+
+      map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
+
+      infoBox.style.display = 'block';
+      infoTitle.textContent = b.dataset.name;
+      infoDesc.textContent = b.dataset.desc;
+      infoLink.href = b.dataset.link;
+    });
+  });
+
+  infoBox.addEventListener('click', e => {
+    if(e.target.classList.contains('close-btn')){
+      infoBox.style.display = 'none';
+      map.style.transform = 'translate(0, 0) scale(1)';
+    }
+  });
+</script>
+</body>
+</html>
