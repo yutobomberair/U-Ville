@@ -42,18 +42,25 @@
   }
 
   .horse_botton {
-    width: 120px;
-    height: 120px;
-    background-image: url('png/horse.png'); /* 馬の顔画像 */
-    background-size: cover;   /* ボタンいっぱいに広げる */
-    background-position: center;
-    border-radius: 10px;
+    position: absolute;
+    top: 50px;
+    left: 750px;
+    width: 150px;              /* ボタンの幅 */
+    height: 150px;             /* ボタンの高さ */
+    border-radius: 50%;        /* 丸いボタンにする */
+    background-image: url("png/horse.png");
+    background-size: contain;  /* 画像の比率を保って収める */
+    background-repeat: no-repeat;
+    border: 2px solid #444;    /* 枠線 */
     cursor: pointer;
-    border: 2px solid #e76f51;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex;             /* クリック範囲をしっかり確保 */
+    align-items: center;       /* 中央寄せ */
+    justify-content: center;   /* 中央寄せ */
+    background-color: rgb(141, 135, 135);   /* 背景色を設定（任意） */
+  }
+
+  .horse_botton:hover {
+    transform: scale(1.1);
   }
 
   .building {
@@ -108,7 +115,7 @@
     <div class="mountain" style="top: 0px; left: 820px;"></div>
 
     <!-- 馬小屋 -->
-    <div class="horse_botton" style="top: 0px; left: 1050px;" data-name="馬小屋" data-desc="ここは馬小屋です。馬と触れ合えます。" data-link="#stables">馬小屋</div>
+    <div class="horse_botton" style="top: 150px; left: 900px;" data-name="馬小屋" data-desc="ここは馬小屋です。馬と触れ合えます。" data-link="#stables">馬小屋</div>
 
     <!-- 他の建物 -->
     <div class="building" style="top: 500px; left: 400px;" data-name="交流" data-desc="ここは交流広場です。メンバーと話しましょう。" data-link="#community">交流</div>
@@ -126,12 +133,34 @@
 <script>
   const map = document.getElementById('map');
   const buildings = document.querySelectorAll('.building');
+  const horse_botton = document.querySelectorAll('.horse_botton');
   const infoBox = document.getElementById('infoBox');
   const infoTitle = document.getElementById('infoTitle');
   const infoDesc = document.getElementById('infoDesc');
   const infoLink = document.getElementById('infoLink');
 
   buildings.forEach(b => {
+    b.addEventListener('click', () => {
+      const rect = b.getBoundingClientRect();
+      const mapRect = map.getBoundingClientRect();
+      const mapCenterX = mapRect.width / 2;
+      const mapCenterY = mapRect.height / 2;
+      const buildingCenterX = rect.left + rect.width/2;
+      const buildingCenterY = rect.top + rect.height/2;
+
+      const offsetX = mapCenterX - buildingCenterX;
+      const offsetY = mapCenterY - buildingCenterY;
+
+      map.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(1.5)`;
+
+      infoBox.style.display = 'block';
+      infoTitle.textContent = b.dataset.name;
+      infoDesc.textContent = b.dataset.desc;
+      infoLink.href = b.dataset.link;
+    });
+  });
+
+  horse_botton.forEach(b => {
     b.addEventListener('click', () => {
       const rect = b.getBoundingClientRect();
       const mapRect = map.getBoundingClientRect();
