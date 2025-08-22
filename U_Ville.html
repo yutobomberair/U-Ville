@@ -4,82 +4,99 @@
 <meta charset="UTF-8">
 <title>U-Ville オープニング</title>
 <style>
-  body, html {
+  html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
-    font-family: sans-serif;
     overflow: hidden;
+    font-family: "Meiryo", sans-serif;
     background: #87ceeb; /* 空色 */
   }
 
-  .opening {
+  /* ビデオを全画面に */
+  #cloudVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 全画面フィット */
+    z-index: 0;
+  }
+
+  /* 文字＆ボタンコンテナ */
+  .overlay {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to top, #228B22 0%, #87ceeb 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    animation: fadeIn 1.5s ease forwards;
+    opacity: 0; /* 初期は非表示 */
+    z-index: 1;
+    transition: opacity 1s ease;
   }
 
   h1 {
     font-size: 64px;
-    color: #fff;
+    color: #6bbbed;
     text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
     margin-bottom: 50px;
-    opacity: 0;
-    animation: fadeIn 2s forwards;
-    animation-delay: 0.5s;
+    text-align: center;
   }
 
   .enter-btn {
     padding: 20px 50px;
     font-size: 24px;
-    background-color: #f4a261;
+    background-color: #6bbbed;
     border: none;
     border-radius: 10px;
     cursor: pointer;
     color: white;
     box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-    opacity: 0;
-    animation: fadeIn 2s forwards;
-    animation-delay: 2s;
     transition: transform 0.3s;
   }
 
   .enter-btn:hover {
     transform: scale(1.1);
   }
-
-  @keyframes fadeIn {
-    to { opacity: 1; }
-  }
 </style>
 </head>
 <body>
 
-<div class="opening" id="openingScreen">
-  <h1>Welcome to U-Ville</h1>
+<!-- 雲アニメ動画 -->
+<video id="cloudVideo" autoplay muted playsinline>
+  <source src="./pages/png/openning.mp4" type="video/webm">
+  お使いのブラウザは動画に対応していません。
+</video>
+
+<!-- 文字＆ボタン -->
+<div class="overlay" id="overlay">
+  <h1>Welcome to U-Ville!</h1>
   <button class="enter-btn" id="enterBtn">Enter U-Ville</button>
 </div>
 
 <script>
+  const video = document.getElementById('cloudVideo');
+  const overlay = document.getElementById('overlay');
   const enterBtn = document.getElementById('enterBtn');
 
-  enterBtn.addEventListener('click', () => {
-    // オープニング画面をフェードアウト
-    const opening = document.getElementById('openingScreen');
-    opening.style.transition = 'opacity 1s';
-    opening.style.opacity = 0;
+  // 動画終了時に文字＆ボタンを表示
+  video.addEventListener('ended', () => {
+    overlay.style.opacity = 1;
+  });
 
+  // Enterボタンクリックで村ページへ遷移
+  enterBtn.addEventListener('click', () => {
+    overlay.style.transition = 'opacity 0.5s';
+    overlay.style.opacity = 0;
+    video.style.transition = 'opacity 0.5s';
+    video.style.opacity = 0;
     setTimeout(() => {
-      // 村マップページに遷移（例: index.html）
-      window.location.href = './pages/village.html';
-    }, 1000);
+      window.location.href = './pages/village.html'; // 遷移先
+    }, 500);
   });
 </script>
 
